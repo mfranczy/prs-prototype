@@ -1,0 +1,149 @@
+{{define "layoutPage"}}
+<html>
+    <head>
+        <link type="text/css" rel="stylesheet" href="//unpkg.com/bootstrap@next/dist/css/bootstrap.min.css"/>
+        <link type="text/css" rel="stylesheet" href="//unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.css"/>
+        <link type="text/css" rel="stylesheet" href="/static/style.css"/>
+
+        <script src="//unpkg.com/vue/dist/vue.js"></script>
+        <script src="//unpkg.com/vue-router/dist/vue-router.js"></script>
+        <script src="//unpkg.com/axios/dist/axios.min.js"></script>
+
+        <script src="//unpkg.com/babel-polyfill@latest/dist/polyfill.min.js"></script>
+        <script src="//unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.js"></script>
+    </head>
+    <body>
+        <div id="app">
+            <label-modal v-if="showLabelModal" @close="showLabelModal = false"></label-modal>
+            <b-navbar toggleable="md" type="dark" variant="info">
+                <b-navbar-toggle target="nav_collapse"></b-navbar-toggle>
+                <b-navbar-brand href="#">Package Regression Service</b-navbar-brand>
+                <b-navbar-nav>
+                    <b-nav-item href="/#/packages">Packages</b-nav-item>
+                    <b-nav-item href="/#/labels">Labels</b-nav-item>
+                </b-navbar-nav>
+                <b-navbar-nav class="ml-auto">
+                    <b-nav-form>
+                        <b-form-input size="sm" class="mr-sm-2" type="text" placeholder="Search"/>
+                    </b-nav-form>
+                    <b-nav-item-dropdown right>
+                        <template slot="button-content">
+                            <em>Settings</em>
+                        </template>
+                        <b-dropdown-item href="#">Add package</b-dropdown-item>
+                        <b-dropdown-item @click="showLabelModal = true">Create label</b-dropdown-item>
+                    </b-nav-item>
+                </b-navbar-nav>
+            </b-navbar>
+            <router-view></router-view>
+        </div>
+        <script type="text/x-template" id="packages">
+            <div id="packages-content">
+                <b-table striped hover :items="packages" :fields="fields">
+                    <template slot="action" slot-scope="row">
+                        <b-button size="sm" @click.stop="row.toggleDetails">
+                            ${ row.detailsShowing ? 'Hide' : 'Show' } Details
+                        </b-button>
+                    </template>
+                    <template slot="labels" slot-scope="row">
+                        <div class="float-left ml-1 px-1 py-1 bg-success text-light"
+                        v-for="label in JSON.parse(row.item.labels)">${ label }</div>
+                    </template>
+                    <template slot="row-details" slot-scope="row">
+                        <b-card>
+                            <b-row class="mb-2">
+                                <b-col sm="3" class="text-sm-left">Summary:</b-col>
+                                <b-col>${ row.item.summary }</b-col>
+                            </b-row>
+                            <b-row class="mb-2">
+                                <b-col sm="3" class="text-sm-left">Comments:</b-col>
+                                <b-col>${ row.item.comments }</b-col>
+                            </b-row>
+                        </b-card>
+                    </template>
+                </b-table>
+            </div>
+        </script>
+        <script type="text/x-template" id="labels">
+            <div id="labels-content">
+                <div id="labels-list">
+                    <b-card no-body>
+                        <b-tabs>
+                            <template slot="tabs">
+                                <b-nav-item v-for="label in labels" @click="fetchLabelPackages(label.id)"
+                                v-bind:disabled="!label.pkgs_cnt" :key="label.id">
+                                    ${ label.name }
+                                    <b-badge variant="light" class="ml-2" pill>${ label.pkgs_cnt }</b-badge>
+                                </b-nav-item>
+                            </template>
+                        </b-tabs>
+                    </b-card>
+                    <b-table striped hover :items="packages" :fields="fields">
+                        <template slot="name" slot-scope="row">
+                            ${ row.item.pkg.name }
+                        </template>
+                        <template slot="version" slot-scope="row">
+                            ${ row.item.pkg.version }
+                        </template>
+                        <template v-for="field, index in labelFields" :slot="field" slot-scope="row">
+                            <!-- FIX THAT ! -->
+                            ${ JSON.parse(row.item.fields_values)[index] }
+                        </template>
+                    </b-table>
+                </div>
+            </div>
+        </script>
+        <script type="text/x-template" id="label-modal">
+            <transition name="modal">
+                <div class="modal-mask">
+                    <div class="modal-wrapper">
+                        <div class="modal-container">
+                            <div class="modal-header">
+                                <slot name="header">
+                                    Create label
+                                </slot>
+                            </div>
+                            <div class="modal-body">
+                                <slot name="body">
+                                    <div style="width:250px">
+                                        <label for="name">Name:</label>
+                                        <input id="name" type="text" required>
+                                        <label class="clearfix" for="summary">Summary:</label>
+                                        <textarea id="summary"></textarea>
+                                    </div>
+                                    <div class="mt-2">
+                                        <span>Fields:</span>
+                                        <div v-for="field, index in fields" style="clearfix">
+                                            <label>Name:</label>
+                                            <input type="text" id="field-${id}" v-model="field.name"/>
+                                            <label>Description:</label>
+                                            <input type="text" id="desc-${id}" v-model="field.description"/>
+                                            <button class="modal-default-button" @click="removeField(index)">
+                                                Remove
+                                            </button>
+                                        </div>
+                                    </div>
+                                </slot>
+                            </div>
+                            <div class="modal-footer">
+                                <slot name="footer">
+                                    <button class="modal-default-button" @click="addField()">
+                                        Add field
+                                    </button>
+                                    <button class="modal-default-button" @click="createLabel()">
+                                        Create
+                                    </button>
+                                    <button class="modal-default-button" @click="$emit('close')">
+                                        Close
+                                    </button>
+                                </slot>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </transition>
+        </script>
+        <script src="/static/app.js"></script>
+    </body>
+</html>
+{{end}}
