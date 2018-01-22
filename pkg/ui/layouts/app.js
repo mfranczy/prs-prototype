@@ -3,11 +3,16 @@ Vue.component('label-modal', {
     data: function() {
         return {
             name: "",
-            description: "",
+            summary: "",
             fields: []
         }
     },
     methods: {
+        clear: function() {
+            this.name = "";
+            this.summary = "";
+            this.fields = [];
+        },
         addField: function() {
             this.fields.push({name: "", description: ""});
         },
@@ -15,7 +20,7 @@ Vue.component('label-modal', {
             this.fields.splice(index, 1);
         },
         createLabel: function() {
-            console.log(JSON.stringify(this.fields));
+            console.log(this.name, this.summary, JSON.stringify(this.fields));
         }
     }
 })
