@@ -85,7 +85,7 @@
                             ${ row.item.pkg.version }
                         </template>
                         <template v-for="field, index in labelFields" :slot="field" slot-scope="row">
-                            <!-- FIX THAT ! -->
+                            <!-- FIX THAT!!! -->
                             ${ JSON.parse(row.item.fields_values)[index] }
                         </template>
                     </b-table>
@@ -97,13 +97,13 @@
                 <div class="d-block text-center">
                     <form>
                         <b-form-input type="text" placeholder="Enter label name" v-model="name"></b-form-input>
-                        <b-form-textarea type="text" placeholder="Enter label summary" v-model="summary">
+                        <b-form-textarea type="text" placeholder="Enter label summary" v-model="summary" class="mt-2">
                         </b-form-textarea>
-                        <div v-for="field, index in fields">
+                        <div v-for="field, index in fields" class="mt-2 clearfix">
                             <b-form-input type="text" placeholder="Enter field name" id="field-${index}"
-                            v-model="field.name"></b-form-input>
+                            v-model="field.name" class="w-25 float-left"></b-form-input>
                             <b-form-input type="text" placeholder="Enter label description" id="desc-${index}"
-                            v-model="field.summary"></b-form-input>
+                            v-model="field.summary" class="w-25 ml-5 float-left"></b-form-input>
                             <b-btn class="mt-1" @click="removeField(index)">Remove</b-btn>
                         </div>
                     </form>

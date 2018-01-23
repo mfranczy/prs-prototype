@@ -86,6 +86,7 @@ func (s *Service) getLabel(rw http.ResponseWriter, req *http.Request) (interface
 	return output, 200, err
 }
 
+// validate params
 func (s *Service) addLabel(rw http.ResponseWriter, req *http.Request) (interface{}, int, error) {
 	var (
 		p struct {

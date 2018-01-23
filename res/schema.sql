@@ -53,7 +53,7 @@ CREATE TABLE packages_repos (
 
 CREATE TABLE labels (
     lb_id bigint default nextval('lb_id_seq') PRIMARY KEY,
-    lb_name varchar(255) UNIQUE,
+    lb_name varchar(255) not null UNIQUE, 
     lb_summary text,
     lb_color varchar(6) default 'ff0000',
     lb_modify_date timestamp default now(),

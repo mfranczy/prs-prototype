@@ -20,7 +20,11 @@ Vue.component('label-modal', {
             this.fields.splice(index, 1);
         },
         createLabel: function() {
-            console.log(this.name, this.summary, JSON.stringify(this.fields));
+            axios.post('/api/v1/labels/add', {
+                name: this.name,
+                summary: this.summary,
+                fields: this.fields
+            });
         }
     }
 })
