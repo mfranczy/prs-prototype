@@ -34,12 +34,62 @@ const Packages = {
     data: function() {
         return {
             packages: this.fetchPackages(),
-            fields: [ 'id', 'name', 'version', 'maintainer', 'labels', 'action' ]
+            labels: [],
+            labelFields: [],
+            attachPkgId: null,
+            attachLabelId: null,
+            fields: [ 'id', 'name', 'version', 'maintainer', 'labels', 'action' ],
+            showModal: false
         }
     },
     methods: {
         fetchPackages: function() {
             axios.get('/api/v1/packages/list').then(response => { this.packages = response.data })
+        },
+        fetchLabels: function() {
+            axios.get('/api/v1/labels/list').then(response => { this.labels = response.data })
+        },
+        attachLabel: function(id) {
+            this.labelFields = [];
+            this.attachPkgId = id;
+            this.showModal = !this.showModal;
+            this.labels = this.fetchLabels();
+        },
+        getLabel: function(id) {
+            this.attachLabelId = id;
+            this.labelFields = [];
+            axios.get('/api/v1/labels/get/' + id).then(response => {
+                let data = response.data[0];
+                let ids = JSON.parse(data.fields_ids);
+                let fields = JSON.parse(data.fields_names);
+                let desc = JSON.parse(data.fields_descriptions);
+                for (i in ids) {
+                    if (ids[i] !== null) {
+                        this.labelFields.push({
+                            "id": ids[i],
+                            "name": fields[i],
+                            "desc": desc[i],
+                            "value": null
+                        })
+                    }
+                }
+            })
+        },
+        attachReq: function() {
+            let fields = [];
+            for (i in this.labelFields) {
+                if (this.labelFields[i].value !== null) {
+                    fields.push({
+                        "id": this.labelFields[i].id,
+                        "value": this.labelFields[i].value
+                    })
+                }
+            }
+            axios.post('/api/v1/labels/attach-pkg', {
+                "pkg_id": this.attachPkgId,
+                "label_id": this.attachLabelId,
+                "fields": fields
+            });
         }
     },
     delimiters: ['${', '}']

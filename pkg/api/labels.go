@@ -60,6 +60,7 @@ func (s *Service) getLabel(rw http.ResponseWriter, req *http.Request) (interface
 	// TODO: fix problem with NullString for returning one object
 	var output []struct {
 		Label              Label      `db:",prefix=lb_." json:"label"`
+		FieldsIDS		   NullString `db:"fields_ids" json:"fields_ids"`
 		FieldsNames        NullString `db:"fields_names" json:"fields_names"`
 		FieldsDescriptions NullString `db:"fields_descriptions" json:"fields_descriptions"`
 	}
@@ -68,6 +69,7 @@ func (s *Service) getLabel(rw http.ResponseWriter, req *http.Request) (interface
 		`
 		SELECT
 			lb_id, lb_name, lb_summary, lb_color, lb_active,
+			json_agg(lbf_id) as fields_ids,
 			json_agg(lbf_name) as fields_names,
 			json_agg(lbf_description) as fields_descriptions,
 			(

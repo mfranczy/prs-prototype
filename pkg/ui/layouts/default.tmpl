@@ -43,6 +43,9 @@
                         <b-button size="sm" @click.stop="row.toggleDetails">
                             ${ row.detailsShowing ? 'Hide' : 'Show' } Details
                         </b-button>
+                        <b-button size="sm" @click="attachLabel(row.item.id)" variant="outline-success">
+                            Attach label
+                        </b-button>
                     </template>
                     <template slot="labels" slot-scope="row">
                         <div class="float-left ml-1 px-1 py-1 bg-success text-light"
@@ -61,6 +64,18 @@
                         </b-card>
                     </template>
                 </b-table>
+                <b-modal v-model="showModal" size="lg" @ok="attachReq">
+                    <div class="d-block text-center">
+                        <div class="clearfix">
+                            <b-btn class="float-left ml-1 px-1 py-1 bg-success text-light"
+                            v-for="label in labels" :key="label.id" @click="getLabel(label.id)">${ label.name }</b-btn>
+                        </div>
+                        <div class="clearfix mt-3">
+                            <b-form-input type="text" v-for="field, index in labelFields" :key="field.id" 
+                            :placeholder="field.name" class="mt-3" v-model="field.value"></b-form-input>
+                        </div>
+                    </div>
+                </b-modal>
             </div>
         </script>
         <script type="text/x-template" id="labels">
