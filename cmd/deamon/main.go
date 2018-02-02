@@ -8,10 +8,10 @@ import (
 
 	"github.com/gorilla/mux"
 
-	"github.com/mfranczy/prs/pkg/api"
-	"github.com/mfranczy/prs/pkg/ui"
-	"github.com/mfranczy/prs/pkg/db"
-	"github.com/mfranczy/prs/pkg/web"
+	"github.com/mfranczy/prs-prototype/pkg/api"
+	"github.com/mfranczy/prs-prototype/pkg/db"
+	"github.com/mfranczy/prs-prototype/pkg/ui"
+	"github.com/mfranczy/prs-prototype/pkg/web"
 )
 
 func main() {
